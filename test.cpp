@@ -3,6 +3,7 @@
 #include "CentralBody.h"
 #include "GroundStation.h"
 #include "PI.h"
+#include "datevec.h"
 #include <string>
 #include <vector>
 #include <complex>
@@ -282,7 +283,18 @@ TEST(GroundStationTest, AzElTest) {
 	EXPECT_TRUE(abs(azel[1] - expected_azel[1]) < tolerance);
 }
 
-TEST(GroundStationTest, InVisTest) {
+TEST(GroundStationTest, InVisTrueTest) {
+	string body = "Earth";
+	CentralBody cb(body);
+	double lat = 90;
+	double lon = 0;
+	double alt = 0;
+	GroundStation site(lat, lon, alt, cb);
+	vector<double> r0 = { 0, 0, 2.95581 };	// km
+	EXPECT_FALSE(site.inVis(r0));
+}
+
+TEST(GroundStationTest, InVisFalseTest) {
 	string body = "Earth";
 	CentralBody cb(body);
 	double lat = 15;
@@ -291,4 +303,34 @@ TEST(GroundStationTest, InVisTest) {
 	GroundStation site(lat, lon, alt, cb);
 	vector<double> r0 = { 5492.00034, 3984.0014, 2.95581 };	// km
 	EXPECT_FALSE(site.inVis(r0));
+}
+
+TEST(DateVecTest, ValidDateTrueTest) {
+	vector<int> date = { 1996, 11, 29, 15, 23, 0 };
+	EXPECT_TRUE(valid_date(date));
+}
+
+TEST(DateVecTest, ValidDateFalseTest) {
+	vector<int> date = { 1995, 12, 15, 24, 60, 60 };
+	EXPECT_FALSE(valid_date(date));
+}
+
+TEST(DateVecTest, ValidDatePairTrueTest) {
+	vector<int> start = { 1995, 12, 15, 15, 23, 0 };
+	vector<int> end = { 1996, 11, 29, 15, 23, 0 };
+	EXPECT_TRUE(valid_date_pair(start, end));
+}
+
+TEST(DateVecTest, ValidDatePairFalseTest) {
+	vector<int> start = { 1996, 11, 29, 15, 23, 0 };
+	vector<int> end = { 1995, 12, 15, 15, 23, 0 };
+	EXPECT_FALSE(valid_date_pair(start, end));
+}
+
+TEST(DateVecTest, DateDiffTest) {
+	vector<int> start = { 1995, 12, 15, 15, 23, 0 };
+	vector<int> end = { 1996, 11, 29, 15, 23, 0 };
+	double dt = datediff(start, end);
+	double expected_dt = 30240000;
+	EXPECT_TRUE(abs(dt - expected_dt) < tolerance);
 }
