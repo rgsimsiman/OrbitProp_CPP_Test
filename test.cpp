@@ -25,6 +25,12 @@ TEST(CentralBodyTest, RTest) {
 	EXPECT_EQ(cb.getR(), 2440.53);
 }
 
+TEST(CentralBodyTest, EccTest) {
+	string body = "Earth";
+	CentralBody cb(body);
+	EXPECT_EQ(cb.getEcc(), 0.0818191908426135);
+}
+
 TEST(SatelliteTest, EccVecTest) {
 	string body = "Earth";
 	CentralBody cb(body);
